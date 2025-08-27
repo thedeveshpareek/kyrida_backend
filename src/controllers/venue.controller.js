@@ -9,7 +9,7 @@ export const createVenue = async (req, res) => {
     const venue = await Venue.create({
       ...req.body,
       ownerId: req.user.id,
-      images: imageUrls,
+      // images: imageUrls,
     });
 
     res.status(201).json(venue);
@@ -25,7 +25,6 @@ export const createVenue = async (req, res) => {
 export const getVenues = async (req, res) => {
   try {
     const { name, minCapacity, maxCapacity, minPrice, maxPrice, availability } = req.query;
-
     const filters = {};
 
     if (name) {
