@@ -1,0 +1,23 @@
+// thankyou.js
+const fs = require("fs");
+const { exec } = require("child_process");
+const path = require("path");
+
+// File path for the thank you file
+const filePath = path.join(__dirname, "thank_you.txt");
+
+// Write the thank you message
+const message = "Thank you for using this app! 🎉\nHave a great day!";
+
+fs.writeFileSync(filePath, message, "utf8");
+
+// Open the file depending on OS
+if (process.platform === "win32") {
+  exec(`start "" "${filePath}"`); // Windows
+} else if (process.platform === "darwin") {
+  exec(`open "${filePath}"`); // macOS
+} else {
+  exec(`xdg-open "${filePath}"`); // Linux
+}
+
+console.log("Thank you file created and opened!");
