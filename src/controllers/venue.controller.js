@@ -1,4 +1,5 @@
 import Venue from "../models/venue.model.js";
+import mongoose from "mongoose";
 
 // Create a venue (with image upload)
 // Create a venue (with image upload)
@@ -6,11 +7,33 @@ export const createVenue = async (req, res) => {
   try {
     const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
-    const venue = await Venue.create({
+    // Determine ownerId based on auth method
+    let ownerId;
+    if (req.authMethod === "api_key") {
+      ownerId = req.body.ownerId;
+      if (!ownerId) {
+        return res.status(400).json({ msg: "ownerId is required when using API key" });
+      }
+      if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+        return res.status(400).json({ msg: "Invalid ownerId" });
+      }
+    } else {
+      // JWT path
+      ownerId = req.user?.id;
+      if (!ownerId) {
+        return res.status(401).json({ msg: "Unauthorized" });
+      }
+    }
+
+    const venueData = {
       ...req.body,
-      ownerId: req.user.id,
-      // images: imageUrls,
-    });
+      images: imageUrls,
+    };
+
+    // Ensure body cannot override ownerId
+    venueData.ownerId = ownerId;
+
+    const venue = await Venue.create(venueData);
 
     res.status(201).json(venue);
   } catch (err) {
