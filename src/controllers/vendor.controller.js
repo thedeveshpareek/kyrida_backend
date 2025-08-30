@@ -1,15 +1,38 @@
 import Vendor from "../models/vendor.model.js";
+import mongoose from "mongoose";
 
 // Create Vendor profile
 export const createVendor = async (req, res) => {
   try {
     const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
-    const vendor = await Vendor.create({
+    // Determine ownerId based on auth method
+    let ownerId;
+    if (req.authMethod === "api_key") {
+      ownerId = req.body.ownerId;
+      if (!ownerId) {
+        return res.status(400).json({ msg: "ownerId is required when using API key" });
+      }
+      if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+        return res.status(400).json({ msg: "Invalid ownerId" });
+      }
+    } else {
+      // JWT path
+      ownerId = req.user?.id;
+      if (!ownerId) {
+        return res.status(401).json({ msg: "Unauthorized" });
+      }
+    }
+
+    const vendorData = {
       ...req.body,
-      ownerId: req.user.id,
       images: imageUrls,
-    });
+    };
+
+    // Ensure body cannot override ownerId
+    vendorData.ownerId = ownerId;
+
+    const vendor = await Vendor.create(vendorData);
 
     res.status(201).json(vendor);
   } catch (err) {

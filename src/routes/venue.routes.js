@@ -1,5 +1,5 @@
 import express from "express";
-import { authMiddleware, requireRole } from "../middleware/auth.middleware.js";
+import { authMiddleware, requireRole, apiKeyOrRole } from "../middleware/auth.middleware.js";
 import {
   createVenue,
   getVenues,
@@ -15,7 +15,7 @@ router.get("/", getVenues);
 router.get("/:id", getVenueById);
 
 // Protected (only venue_owner can manage)
-router.post("/", authMiddleware, requireRole("venue_owner"),upload.array("images", 5), createVenue);
+router.post("/", apiKeyOrRole("venue_owner"),upload.array("images", 5), createVenue);
 router.put("/:id", authMiddleware, requireRole("venue_owner"), updateVenue);
 router.delete("/:id", authMiddleware, requireRole("venue_owner"), deleteVenue);
 
