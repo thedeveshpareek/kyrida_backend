@@ -1,5 +1,5 @@
 import express from "express";
-import { upload } from "../middleware/upload.middleware.js";
+import { uploadVendorFiles } from "../middleware/upload.middleware.js";
 import { authMiddleware, requireRole, apiKeyOrRole } from "../middleware/auth.middleware.js";
 import {
   createVendor,
@@ -12,12 +12,12 @@ import {
 const router = express.Router();
 
 // Public
-router.get("/", getVendors);
+router.get("/",authMiddleware, getVendors);
 router.get("/:id", getVendorById);
 
 // Vendor Owner Only
-router.post("/", apiKeyOrRole("vendor"), upload.array("images", 5), createVendor);
-router.put("/:id", authMiddleware, requireRole("vendor"), updateVendor);
-router.delete("/:id", authMiddleware, requireRole("vendor"), deleteVendor);
+router.post("/", apiKeyOrRole("vendor"), uploadVendorFiles, createVendor);
+router.put("/:id", authMiddleware, uploadVendorFiles ,requireRole("vendor"), updateVendor);
+router.delete("/:id", authMiddleware,uploadVendorFiles, requireRole("vendor"), deleteVendor);
 
 export default router;

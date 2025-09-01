@@ -14,7 +14,15 @@ const storage = multer.diskStorage({
 
 // File filter (only images allowed)
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/jpg",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ];
+
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -22,4 +30,13 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-export const upload = multer({ storage, fileFilter });
+const upload = multer({ storage, fileFilter });
+
+const uploadVendorFiles = upload.fields([
+  { name: "profile", maxCount: 1 },
+  { name: "gallery", maxCount: 10 },
+  { name: "portfolioFiles", maxCount: 10 },
+  { name: "portfolioImages", maxCount: 10 },
+]);
+
+export { upload, uploadVendorFiles };
