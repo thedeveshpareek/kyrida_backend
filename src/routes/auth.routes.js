@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/verify", verifyEmail);
+router.post("/verify",authMiddleware, verifyEmail);
 router.get("/me", authMiddleware, getMe);  // 👈 Protected route
 
 export default router;

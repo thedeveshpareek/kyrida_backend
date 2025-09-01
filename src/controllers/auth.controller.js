@@ -99,9 +99,9 @@ export const getMe = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   try {
-    const { token, userId } = req.body;
+    const { token } = req.body;
 
-    const record = await VerificationToken.findOne({ userId, token });
+    const record = await VerificationToken.findOne({ token });
     if (!record) return res.status(400).json({ msg: "Invalid or expired token" });
 
     if (record.expiresAt < Date.now()) {
@@ -109,7 +109,7 @@ export const verifyEmail = async (req, res) => {
       return res.status(400).json({ msg: "Token expired" });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(record.userId);
     if (!user) return res.status(400).json({ msg: "User not found" });
 
     user.verified = true;
