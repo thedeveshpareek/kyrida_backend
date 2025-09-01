@@ -19,6 +19,7 @@ router.get("/:id", getEventById);
 
 // Creator
 router.post("/", authMiddleware, requireRole("creator"), upload.single("banner"), createEvent);
+router.get("/", authMiddleware,getMyEvents);
 router.get("/me/all", authMiddleware, requireRole("creator"), getMyEvents);
 router.put("/:id", authMiddleware, requireRole("creator"), updateEvent);
 router.patch("/:id/publish", authMiddleware, requireRole("creator"), publishEvent);
