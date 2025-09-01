@@ -9,6 +9,7 @@ import vendorRoutes from "./routes/vendor.routes.js";
 import eventRoutes from "./routes/event.routes.js";
 import jobPostingsRoutes from "./routes/jobPostings.route.js";
 
+
 dotenv.config();
 const app = express();
 
