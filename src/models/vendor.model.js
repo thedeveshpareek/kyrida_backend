@@ -31,13 +31,9 @@ const portfolioSchema = new mongoose.Schema({
 
 const vendorSchema = new mongoose.Schema(
   {
-    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // vendor user
     name: { type: String, required: true, trim: true },
-    category: {
-      type: String,
-      enum: ["catering", "decoration", "music", "photography", "other"],
-      required: true
-    },
+    category: { type: String, required: true, trim: true },
     description: { type: String },
     // contact: { type: String, required: true },
     // location: { type: String },
