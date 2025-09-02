@@ -45,8 +45,11 @@ export const register = async (req, res) => {
       `
     );
 
+    const { passwordHash: _, ...userData } = user.toObject();
+
     res.status(201).json({
       msg: "User registered successfully. Please check your email for the verification token.",
+      user: userData,
     });
   } catch (err) {
     console.error(err);
@@ -94,8 +97,6 @@ export const getMe = async (req, res) => {
   }
 };
 
-
-// import VerificationToken from "../models/verificationToken.model.js";
 
 export const verifyEmail = async (req, res) => {
   try {
