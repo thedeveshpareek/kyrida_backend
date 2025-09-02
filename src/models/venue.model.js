@@ -35,7 +35,7 @@ import mongoose from "mongoose";
 const venueSchema = new mongoose.Schema(
   // create the model json according to the above data
   {
-    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
     name: { type: String, required: true, trim: true },
     location: { type: String, required: true },
     capacity: { type: Number, required: true },

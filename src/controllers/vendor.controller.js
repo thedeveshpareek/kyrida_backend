@@ -48,10 +48,8 @@ export const createVendor = async (req, res) => {
 
     // Determine ownerId
     let ownerId;
-    if (req.authMethod === "api_key") {
-      ownerId = req.body.ownerId;
-      if (!ownerId) return res.status(400).json({ msg: "ownerId is required when using API key" });
-      if (!mongoose.Types.ObjectId.isValid(ownerId)) return res.status(400).json({ msg: "Invalid ownerId" });
+    if (req.authMethod === "api_key") {      // When using API key, ownerId is not required from request body
+      ownerId = null;
     } else {
       ownerId = req.user?.id;
       if (!ownerId) return res.status(401).json({ msg: "Unauthorized" });
