@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const vendorSchema = new mongoose.Schema(
   {
-    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // vendor user
+    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // vendor user
     name: { type: String, required: true, trim: true },
     category: {
       type: String,
