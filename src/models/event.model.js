@@ -7,10 +7,10 @@ const eventSchema = new mongoose.Schema(
     type: { type: String, enum: ["wedding", "concert", "conference", "party", "other"], required: true },
     description: { type: String },
     banner: { type: String }, // main event image
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    // startDate: { type: Date, required: true },
+    eventDateTime: { type: Date, required: false },
 
-    venueBookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking", required: true },
+    venueBookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking", required: false },
     vendorBookings: [{ type: mongoose.Schema.Types.ObjectId, ref: "VendorBooking" }],
 
     capacity: { type: Number, default: 100 },

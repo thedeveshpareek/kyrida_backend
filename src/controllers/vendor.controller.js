@@ -4,36 +4,72 @@ import mongoose from "mongoose";
 // Create Vendor profile
 export const createVendor = async (req, res) => {
   try {
-    const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    const imageUrls = req.files?.gallery
+      ? req.files.gallery.map(file => `/uploads/${file.filename}`)
+      : [];
 
-    // Determine ownerId based on auth method
+    const profileImage = req.files?.profile?.[0]
+      ? `/uploads/${req.files.profile[0].filename}`
+      : null;
+
+    // Build portfolio entries
+    const portfolio = [];
+
+    if (req.files?.portfolioFiles) {
+      req.files.portfolioFiles.forEach(file => {
+        portfolio.push({
+          type: "file",
+          url: `/uploads/${file.filename}`,
+          name: file.originalname
+        });
+      });
+    }
+
+    if (req.files?.portfolioImages) {
+      req.files.portfolioImages.forEach(file => {
+        portfolio.push({
+          type: "image",
+          url: `/uploads/${file.filename}`,
+          name: file.originalname
+        });
+      });
+    }
+
+    // Links from body (JSON.parse if sent as string)
+    if (req.body.portfolioLinks) {
+      const links = Array.isArray(req.body.portfolioLinks)
+        ? req.body.portfolioLinks
+        : JSON.parse(req.body.portfolioLinks);
+
+      links.forEach(link => {
+        portfolio.push({ type: "link", url: link });
+      });
+    }
+
+    // Determine ownerId
     let ownerId;
-    if (req.authMethod === "api_key") {
-      // When using API key, ownerId is not required from request body
+    if (req.authMethod === "api_key") {      // When using API key, ownerId is not required from request body
       ownerId = null;
     } else {
-      // JWT path
       ownerId = req.user?.id;
-      if (!ownerId) {
-        return res.status(401).json({ msg: "Unauthorized" });
-      }
+      if (!ownerId) return res.status(401).json({ msg: "Unauthorized" });
     }
 
     const vendorData = {
       ...req.body,
       images: imageUrls,
+      profileImage,
+      portfolio,
+      ownerId
     };
 
-    // Ensure body cannot override ownerId
-    vendorData.ownerId = ownerId;
-
     const vendor = await Vendor.create(vendorData);
-
     res.status(201).json(vendor);
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
 };
+
 
 // Get all vendors with search & filter
 // Get all vendors with search, filter, sort, pagination
@@ -53,6 +89,10 @@ export const getVendors = async (req, res) => {
     } = req.query;
 
     const filters = {};
+    const ownerId = req.user.id ? req.user.id : "";
+    if(ownerId){
+      filters = {ownerId}
+    }
 
     if (category) filters.category = category;
     if (location) filters.location = { $regex: location, $options: "i" };
@@ -78,7 +118,7 @@ export const getVendors = async (req, res) => {
     // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    const vendors = await Vendor.find(filters)
+    const data = await Vendor.find(filters)
       .populate("ownerId", "name email")
       .sort(sortOptions)
       .skip(skip)
@@ -91,7 +131,7 @@ export const getVendors = async (req, res) => {
       limit: parseInt(limit),
       total,
       pages: Math.ceil(total / limit),
-      vendors
+      data
     });
   } catch (err) {
     res.status(500).json({ msg: err.message });

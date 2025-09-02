@@ -14,6 +14,12 @@ const userSchema = new mongoose.Schema(
     verified: { type: Boolean, default: false },
     suspended: { type: Boolean, default: false },
     banned: { type: Boolean, default: false },
+    eventType: { type: String, trim: true },
+    attendingFor: [{ type: String }], 
+    state: { type: String, trim: true },
+    city: { type: String, trim: true },
+    eventJourneyStage: { type: String, trim: true },
+    selectedExperiences: [{ type: String }], 
   },
   { timestamps: true }
 );
